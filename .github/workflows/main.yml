@@ -1,0 +1,30 @@
+name: Draw diagrams
+on:
+  pull_request:
+    branches:
+    - master
+
+jobs:
+  diagrams:
+    name: Draw diagrams
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v2
+      - name: Where we are
+        run: pwd && ls -lai
+      - name: Process diagrams
+        uses: Timmy/plantuml-action@v1
+        with:
+          args: '-v -stdrpt:1 -enablestats -tpng -o "images" "bci/*.puml" "publiccloud/"'
+      - name: Display diagrams
+        run: |
+          ls -lai bci/images
+          ls -lai publiccloud/images
+      - name: Publish results
+        uses: actions/upload-artifact@v3
+        with:
+          name: rendered
+          path: |
+            bci/images/*.png
+            publiccloud/images/*.png
