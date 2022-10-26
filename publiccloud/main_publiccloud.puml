@@ -1,0 +1,97 @@
+'# SUSE's openQA tests
+'#
+'# Copyright 2021 SUSE LLC
+'# SPDX-License-Identifier' FSFAP''
+
+'# Summary' module loader of container tests
+'# Maintainer' qa-c@suse.de
+
+@startuml
+
+title main_publiccloud'
+' ========
+' Description
+'  UML metalanguage of test code in:
+'  https://github.com/os-autoinst/os-autoinst-distri-opensuse/blob/master/lib/main_publiccloud.pm
+'
+' Author: Maurizio Dati - mdati@suse.com
+' =========
+
+!pragma useVerticalIf on
+
+' Legend: 
+' (def)   = parameter is defined has a value
+' (undef) = parameter undefined or empty
+
+start
+note
+ load_publiccloud_consoletests
+end note
+
+' # sub load_maintenance_publiccloud_tests {
+'    # Please pass the $run_args to fatal test modules
+
+if ( PUBLIC_CLOUD_QAM ) then (1)
+else (0)
+     : console/cleanup_qam_testrepos;
+endif
+
+    :console/openvswitch;
+    :console/rpm;
+    :console/openssl_alpn;
+    :console/check_default_network_manager;
+    :console/sysctl;
+    :console/sysstat;
+    :console/gpg;
+    :console/sudo;
+    :console/supportutil;
+    :console/journalctl;
+    :console/procps;
+    :console/suse_module_tools;
+if ( sle '12-SP4' ) then (1)
+else (0)
+    :console/libgcrypt;
+endif
+
+stop
+
+' # sub load_latest_publiccloud_tests {
+ 
+start
+note
+ load_create_publiccloud_tools_image 
+end note
+    :autoyast/prepare_profile;
+    :installation/bootloader;
+    :autoyast/installation;
+    :publiccloud/prepare_tools;
+    :shutdown/shutdown;
+stop
+
+start
+
+'# Test CLI tools for each provider
+note
+ load_publiccloud_cli_tools 
+end note
+    :boot/boot_to_desktop;
+    :publiccloud/azure_cli;
+    :publiccloud/aws_cli;
+    :publiccloud/google_cli;
+    :shutdown/shutdown;
+stop
+
+start
+note
+ load_publiccloud_download_repos 
+end note
+
+    :publiccloud/download_repos;
+    :shutdown/shutdown;
+stop
+
+
+
+'# sub load_publiccloud_tests {
+
+@enduml
